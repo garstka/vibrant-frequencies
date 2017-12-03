@@ -3,7 +3,7 @@
 """Console script for vibrant_frequencies."""
 
 import click
-from vibrant_frequencies.prototype import visualize
+from .prototype import visualize
 
 
 @click.command()
