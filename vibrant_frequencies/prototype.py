@@ -45,7 +45,7 @@ def visualize():
     overflows = 0
     prev_ovf_time = time.time()
     pygame.init()
-    scale = 1 / screenWidth;
+    scale = 0.5 / screenWidth;
     lastColor = random.choice(colors)
     lastRadius = 0;
     while True:
@@ -66,8 +66,8 @@ def visualize():
             #    radius = screenWidth * 0.6
             #    scale = min(screenWidth * 0.6 / ff, scale)
 
-            if lastRadius > 0.2 * screenWidth and \
-                    radius > 0.2 * screenWidth and \
+            if lastRadius > 0.4 * screenWidth and \
+                    radius > 0.4 * screenWidth and \
                     np.random.uniform() < 0.9:
                 pass  # big circles mostly keep their color
             elif radius < 5 and np.random.uniform() < 0.99:
@@ -94,9 +94,9 @@ def visualize():
                 if ev.key == pygame.K_ESCAPE:
                     break
                 elif ev.key == pygame.K_UP:
-                    scale *= 1.2
+                    scale *= 1.1
                 elif ev.key == pygame.K_DOWN:
-                    scale *= 0.8
+                    scale *= 0.9
 
             lastRadius = radius
 
