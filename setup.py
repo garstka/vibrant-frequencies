@@ -13,6 +13,10 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'Click>=6.0',
+    'sounddevice>=0.3.9',
+    'pyaudio>=0.2.11',
+    'pygame>=1.9.3',
+    'numpy>=1.13.3'
     # TODO: put package requirements here
 ]
 
@@ -37,7 +41,7 @@ setup(
     packages=find_packages(include=['vibrant_frequencies']),
     entry_points={
         'console_scripts': [
-            'vibrant_frequencies=vibrant_frequencies.cli:main'
+            'vf=vibrant_frequencies.cli:main'
         ]
     },
     include_package_data=True,

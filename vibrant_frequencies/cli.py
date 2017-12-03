@@ -3,14 +3,13 @@
 """Console script for vibrant_frequencies."""
 
 import click
+from vibrant_frequencies.prototype import visualize
 
 
 @click.command()
 def main(args=None):
     """Console script for vibrant_frequencies."""
-    click.echo("Replace this message by putting your code into "
-               "vibrant_frequencies.cli.main")
-    click.echo("See click documentation at http://click.pocoo.org/")
+    visualize()
 
 
 if __name__ == "__main__":
