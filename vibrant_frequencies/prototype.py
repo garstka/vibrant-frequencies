@@ -6,6 +6,7 @@ import pyaudio
 import pygame
 import sounddevice as sd
 
+from vibrant_frequencies.interactive.event_handler import EventHandler
 from .visuals.proto_circles import ProtoCircles
 from .device.sound import SoundDevice
 from .device.video import VideoDevice
@@ -37,7 +38,9 @@ def visualize():
                           video=video,
                           config=config)
 
-    while True:
+    events = EventHandler(visual=visual)
+
+    while not events.should_quit:
         try:
             y = np.fromstring(
                 stream.read(sound.frames_per_buffer,
@@ -53,22 +56,13 @@ def visualize():
 
             pygame.display.flip()
 
-            ev = pygame.event.poll()
-            if ev.type == pygame.QUIT:
-                break
-            elif ev.type == pygame.KEYDOWN:
-                if ev.key == pygame.K_ESCAPE:
-                    break
-                elif ev.key == pygame.K_UP:
-                    visual.scale(times=1.1)
-                elif ev.key == pygame.K_DOWN:
-                    visual.scale(times=0.9)
-
+            events.poll()
         except IOError:
             overflows += 1
             if time.time() > prev_ovf_time + 1:
                 prev_ovf_time = time.time()
                 print('Audio buffer has overflowed {} times'.format(overflows))
+
     stream.stop_stream()
     stream.close()
     sound.pyaudio.terminate()

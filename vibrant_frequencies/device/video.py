@@ -10,12 +10,12 @@ class VideoDevice:
         conf = config.video
 
         dimensions = (conf.screen_width, conf.screen_height)
-
         flags = 0
+
         if conf.vsync:
-            flags = flags | pygame.HWSURFACE
+            flags = flags | pygame.HWSURFACE | pygame.DOUBLEBUF
             if not conf.fullscreen:
-                log.warning("VSync won't work in windowed mode.")
+                log.warning("VSync may not work in windowed mode.")
 
         if conf.fullscreen:
             flags = flags | pygame.FULLSCREEN
