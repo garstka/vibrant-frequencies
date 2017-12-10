@@ -5,6 +5,8 @@ import pygame
 
 
 class ProtoCircles:
+    dimensions = 1
+
     def __init__(self, config, video, colors):
         self._screen = video.screen
         self._colors = colors
@@ -18,6 +20,11 @@ class ProtoCircles:
 
         self._origin = (int(self._screen_width / 2),
                         int(self._screen_height / 2))
+
+        self._background = (0, 0, 0)
+
+    def activate(self):
+        self._screen.fill(self._background)
 
     def apply(self, y):
 

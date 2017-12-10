@@ -6,7 +6,9 @@ import pyaudio
 import pygame
 import sounddevice as sd
 
-from vibrant_frequencies.interactive.event_handler import EventHandler
+from .visuals.band import Band
+from .interactive.event_handler import EventHandler
+from .visuals.visual_set import VisualSet
 from .visuals.proto_circles import ProtoCircles
 from .device.sound import SoundDevice
 from .device.video import VideoDevice
@@ -28,17 +30,49 @@ def visualize():
 
     sound = SoundDevice(config)
     video = VideoDevice(config)
-    screen = video.screen
     colors = PrototypeColorProvider().colors
     stream = sound.stream
     overflows = 0
     prev_ovf_time = time.time()
 
-    visual = ProtoCircles(colors=colors,
-                          video=video,
-                          config=config)
+    visuals = [ProtoCircles(colors=colors,
+                            video=video,
+                            config=config),
+               Band(colors=colors,
+                    video=video,
+                    config=config),
+               Band(colors=colors,
+                    video=video,
+                    config=config,
+                    rotation=True),
+               Band(colors=colors,
+                    video=video,
+                    config=config,
+                    rotation=True,
+                    symmetry=True),
+               Band(colors=colors,
+                    video=video,
+                    config=config,
+                    rotation=True,
+                    symmetry=True,
+                    double_symmetry=True),
+               Band(colors=colors,
+                    video=video,
+                    config=config,
+                    rotation=True,
+                    symmetry=True,
+                    double_symmetry=True,
+                    double_rotation=True)]
 
-    events = EventHandler(visual=visual)
+    def dim_reduction(y_set):
+        ff = np.max(y_set)
+        print(ff)
+        return ff
+
+    visual_set = VisualSet(visuals=visuals,
+                           dim_reduction=dim_reduction)
+
+    events = EventHandler(visual_set=visual_set)
 
     while not events.should_quit:
         try:
@@ -49,10 +83,8 @@ def visualize():
             y = y.astype(np.float32)
             # print(y)
             f = np.abs(np.fft.rfft(y))
-            ff = np.max(f)
-            print(ff)
 
-            visual.apply(ff)
+            visual_set.apply(f)
 
             pygame.display.flip()
 

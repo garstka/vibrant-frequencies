@@ -1,3 +1,4 @@
+import math
 import sounddevice
 
 from ..config.all import Config
@@ -27,7 +28,11 @@ class SoundDevice:
         rate = config.sound.mic_rate
         channels = 1  # self.__config.sound.channels
         fps = config.video.fps
-        self.__frames_per_buffer = int(rate / fps)
+
+        ratio = rate / fps
+        print(ratio)
+        self.__frames_per_buffer = 2 ** int(math.log(rate / fps, 2))
+        # self.__frames_per_buffer = int(rate / fps)
         self.__stream = \
             self.__pyaudio.open(format=pyaudio.paInt16,
                                 channels=channels,
