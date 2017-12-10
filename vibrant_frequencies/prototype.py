@@ -9,7 +9,7 @@ import sounddevice as sd
 from .visuals.band import Band
 from .interactive.event_handler import EventHandler
 from .visuals.visual_set import VisualSet
-from .visuals.proto_circles import ProtoCircles
+from .visuals.proto_circles import ProtoCircles, AnimatedProtoCircles
 from .device.sound import SoundDevice
 from .device.video import VideoDevice
 from .interactive.config_provider import \
@@ -62,11 +62,17 @@ def visualize():
                     rotation=True,
                     symmetry=True,
                     double_symmetry=True,
-                    double_rotation=True)]
+                    double_rotation=True),
+               AnimatedProtoCircles(colors=colors,
+                                    video=video,
+                                    config=config),
+               AnimatedProtoCircles(colors=colors,
+                                    video=video,
+                                    config=config,
+                                    linear_waves=True)]
 
     def dim_reduction(y_set):
         ff = np.max(y_set)
-        print(ff)
         return ff
 
     visual_set = VisualSet(visuals=visuals,

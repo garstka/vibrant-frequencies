@@ -4,29 +4,24 @@ import numpy as np
 import pygame
 
 
-class ProtoCircles:
+class ProtoCircleProvider:
     dimensions = 1
 
-    def __init__(self, config, video, colors):
-        self._screen = video.screen
+    def __init__(self,
+                 colors,
+                 screen_width,
+                 screen_height):
         self._colors = colors
 
-        self._screen_width = config.video.screen_width
-        self._screen_height = config.video.screen_height
+        self._screen_width = screen_width
+        self._screen_height = screen_height
         self._scale = 0.5 / self._screen_width
 
         self._last_color = random.choice(colors)
         self._last_radius = 0
+        self._last_width = 0
 
-        self._origin = (int(self._screen_width / 2),
-                        int(self._screen_height / 2))
-
-        self._background = (0, 0, 0)
-
-    def activate(self):
-        self._screen.fill(self._background)
-
-    def apply(self, y):
+    def next(self, y):
 
         radius = y * self._scale
 
@@ -34,8 +29,6 @@ class ProtoCircles:
         # if radius > screenWidth * 0.6:
         #    radius = screenWidth * 0.6
         #    scale = min(screenWidth * 0.6 / ff, scale)
-
-        final_width = 0
 
         if self._last_radius > 0.4 * self._screen_width and \
                 radius > 0.4 * self._screen_width and \
@@ -53,11 +46,102 @@ class ProtoCircles:
         # if np.random.uniform() < 0.3:
         #    finalWidth = radius * 0.05 * np.random.uniform()
 
-        pygame.draw.circle(self._screen,
-                           self._last_color,
-                           self._origin,
-                           self._last_radius,
-                           int(final_width))
-
     def scale(self, times: float):
         self._scale *= times
+
+    @property
+    def color(self):
+        return self._last_color
+
+    @property
+    def radius(self):
+        return self._last_radius
+
+    @property
+    def width(self):
+        return self._last_width
+
+
+class ProtoCircles:
+    dimensions = 1
+
+    def __init__(self, config, video, colors):
+        self._provider = \
+            ProtoCircleProvider(colors=colors,
+                                screen_width=config.video.screen_width,
+                                screen_height=config.video.screen_height)
+
+        self._screen = video.screen
+
+        self._origin = (int(config.video.screen_width / 2),
+                        int(config.video.screen_height / 2))
+
+        self._background = (0, 0, 0)
+
+    def activate(self):
+        self._screen.fill(self._background)
+
+    def apply(self, y):
+        self._provider.next(y)
+
+        pygame.draw.circle(self._screen,
+                           self._provider.color,
+                           self._origin,
+                           self._provider.radius,
+                           self._provider.width)
+
+    def scale(self, times: float):
+        self._provider.scale(times)
+
+
+class AnimatedProtoCircles(ProtoCircles):
+    dimensions = 1
+
+    def __init__(self, config, video, colors, linear_waves=False):
+        super().__init__(config, video, colors)
+
+        screen_width = config.video.screen_width
+        screen_height = config.video.screen_height
+        self._max_radius = np.sqrt(screen_width ** 2 + screen_height ** 2) / 2
+
+        self._layers = list()
+        self._width = 0
+        self._background = (0, 0, 0)
+        self._velocity = 0.01
+        self._last_radius = self._max_radius
+
+        self._linear_waves = linear_waves
+        self._linear_velocity = 5
+
+    def apply(self, y):
+        self._provider.next(y)
+
+        color = self._provider.color
+        radius = self._provider.radius
+
+        self._layers = [(self.__scale_up(r), c)
+                        for r, c in self._layers
+                        if r > radius]
+
+        if self._layers:
+            r, c = self._layers[0]
+            if r > self._max_radius:
+                self._background = c
+                del self._layers[0]
+
+        self._layers.extend([(radius, color)])
+        print(len(self._layers))
+        self._screen.fill(self._background)
+        for r, c in self._layers:
+            pygame.draw.circle(self._screen,
+                               c,
+                               self._origin,
+                               int(r),
+                               self._width)
+        self._last_radius = radius
+
+    def __scale_up(self, radius):
+        if self._linear_waves:
+            return radius + self._linear_velocity
+        else:
+            return radius * (1.0 + self._velocity)
