@@ -4,7 +4,7 @@ from math import cos, sin, pi
 import numpy as np
 import pygame
 
-from vibrant_frequencies.device.video import VideoDevice
+from ..device.video import VideoDevice
 
 
 class Band:

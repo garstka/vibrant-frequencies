@@ -38,7 +38,12 @@ setup(
     author="Matt Garstka",
     author_email='matt.garstka@gmail.com',
     url='https://github.com/garstka/vibrant_frequencies',
-    packages=find_packages(include=['vibrant_frequencies']),
+    packages=['vibrant_frequencies',
+              'vibrant_frequencies.colors',
+              'vibrant_frequencies.config',
+              'vibrant_frequencies.device',
+              'vibrant_frequencies.interactive',
+              'vibrant_frequencies.visuals'],
     entry_points={
         'console_scripts': [
             'vf=vibrant_frequencies.cli:main'
