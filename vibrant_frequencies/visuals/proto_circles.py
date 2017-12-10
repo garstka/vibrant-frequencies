@@ -2,6 +2,7 @@ import random
 
 import numpy as np
 import pygame
+import pygame.gfxdraw
 
 
 class ProtoCircleProvider:
@@ -119,25 +120,30 @@ class AnimatedProtoCircles(ProtoCircles):
         color = self._provider.color
         radius = self._provider.radius
 
-        self._layers = [(self.__scale_up(r), c)
-                        for r, c in self._layers
-                        if r > radius]
+        if radius > self._max_radius:
+            self._background = color
+            self._layers = []
+        else:
+            self._layers = [(self.__scale_up(r), c)
+                            for r, c in self._layers
+                            if r > radius]
 
-        if self._layers:
-            r, c = self._layers[0]
-            if r > self._max_radius:
-                self._background = c
-                del self._layers[0]
+            while self._layers:
+                r, c = self._layers[0]
+                if r > self._max_radius:
+                    self._background = c
+                    del self._layers[0]
+                else:
+                    break
 
-        self._layers.extend([(radius, color)])
+            self._layers.extend([(radius, color)])
+
         print(len(self._layers))
         self._screen.fill(self._background)
+
         for r, c in self._layers:
-            pygame.draw.circle(self._screen,
-                               c,
-                               self._origin,
-                               int(r),
-                               self._width)
+            self.__circle(r, c)
+
         self._last_radius = radius
 
     def __scale_up(self, radius):
@@ -145,3 +151,17 @@ class AnimatedProtoCircles(ProtoCircles):
             return radius + self._linear_velocity
         else:
             return radius * (1.0 + self._velocity)
+
+    def __circle(self, r, c, w=0):
+        pygame.draw.circle(self._screen,
+                           c,
+                           self._origin,
+                           int(r),
+                           0)
+
+    def __gfxcircle(self, r, c, w=0):
+        pygame.gfxdraw.filled_circle(self._screen,
+                                     self._origin[0],
+                                     self._origin[1],
+                                     int(r),
+                                     c)
