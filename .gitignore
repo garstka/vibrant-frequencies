@@ -103,3 +103,6 @@ ENV/
 # IntelliJ
 /.idea/workspace.xml
 /.idea/misc.xml
+
+# debug config
+/config.json
