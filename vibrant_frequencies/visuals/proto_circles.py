@@ -32,8 +32,8 @@ class ProtoCircleProvider:
         #    scale = min(screenWidth * 0.6 / ff, scale)
 
         if self._last_radius > 0.4 * self._screen_width and \
-                radius > 0.4 * self._screen_width and \
-                np.random.uniform() < 0.9:
+            radius > 0.4 * self._screen_width and \
+            np.random.uniform() < 0.9:
             pass  # big circles mostly keep their color
         elif radius < 5 and np.random.uniform() < 0.99:
             pass  # small circles almost always keep their color
@@ -82,7 +82,7 @@ class ProtoCircles:
     def activate(self):
         self._screen.fill(self._background)
 
-    def apply(self, y):
+    def apply(self, y, dt):
         self._provider.next(y)
 
         pygame.draw.circle(self._screen,
@@ -114,7 +114,7 @@ class AnimatedProtoCircles(ProtoCircles):
         self._linear_waves = linear_waves
         self._linear_velocity = 5
 
-    def apply(self, y):
+    def apply(self, y, dt):
         self._provider.next(y)
 
         color = self._provider.color
@@ -124,7 +124,7 @@ class AnimatedProtoCircles(ProtoCircles):
             self._background = color
             self._layers = []
         else:
-            self._layers = [(self.__scale_up(r), c)
+            self._layers = [(self.__scale_up(r, dt), c)
                             for r, c in self._layers
                             if r > radius]
 
@@ -146,11 +146,11 @@ class AnimatedProtoCircles(ProtoCircles):
 
         self._last_radius = radius
 
-    def __scale_up(self, radius):
+    def __scale_up(self, radius, dt):
         if self._linear_waves:
-            return radius + self._linear_velocity
+            return radius + self._linear_velocity * dt
         else:
-            return radius * (1.0 + self._velocity)
+            return radius * (1.0 + self._velocity * dt)
 
     def __circle(self, r, c, w=0):
         pygame.draw.circle(self._screen,

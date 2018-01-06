@@ -42,7 +42,7 @@ class Band:
     def activate(self):
         pass
 
-    def apply(self, y_set):
+    def apply(self, y_set, dt):
         self._screen.fill(self._background)
 
         self._color = random.choice(self._colors)
@@ -51,13 +51,14 @@ class Band:
         step = 2 * pi / spectrum_length
 
         if self._use_rotation:
-            self._rotation += self._rotate_step * (0.5 - np.random.uniform())
+            self._rotation += self._rotate_step * (0.5 - np.random.uniform()) \
+                              * dt
             if self._rotation > 2 * pi:
                 self._rotation = 0.0
 
             if self._double_symmetry and self._use_double_rotation:
                 self._double_rotation += \
-                    self._rotate_step * (0.5 - np.random.uniform())
+                    self._rotate_step * (0.5 - np.random.uniform()) * dt
                 if self._double_rotation > 2 * pi:
                     self._double_rotation = 0.0
 

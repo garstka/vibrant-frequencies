@@ -10,7 +10,7 @@ class VisualSet:
         self._log = logging.getLogger(__name__)
         self._activate_visual = True
 
-    def apply(self, y_set):
+    def apply(self, y_set, dt):
         if not self._visuals:
             return
 
@@ -27,9 +27,9 @@ class VisualSet:
                                       "display 1d visual.")
                     self._warned = True
             else:
-                visual.apply(y=self._dim_reduction(y_set))
+                visual.apply(y=self._dim_reduction(y_set), dt=dt)
         elif visual.dimensions == 2:
-            visual.apply(y_set=y_set)
+            visual.apply(y_set=y_set, dt=dt)
 
     @property
     def empty(self):

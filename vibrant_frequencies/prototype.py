@@ -1,6 +1,7 @@
 import random
 import time
 
+import datetime
 import numpy as np
 import pyaudio
 import pygame
@@ -80,8 +81,11 @@ def visualize():
 
     events = EventHandler(visual_set=visual_set)
 
+    time_scale = 50.0
+    t0 = datetime.datetime.now()
     while not events.should_quit:
         try:
+            t1 = datetime.datetime.now()
             y = np.fromstring(
                 stream.read(sound.frames_per_buffer,
                             exception_on_overflow=False),
@@ -90,11 +94,14 @@ def visualize():
             # print(y)
             f = np.abs(np.fft.rfft(y))
 
-            visual_set.apply(f)
+            visual_set.apply(f,
+                             dt=(t1 - t0).microseconds / 1000000.0 * time_scale)
 
             pygame.display.flip()
 
             events.poll()
+
+            t0 = t1
         except IOError:
             overflows += 1
             if time.time() > prev_ovf_time + 1:
