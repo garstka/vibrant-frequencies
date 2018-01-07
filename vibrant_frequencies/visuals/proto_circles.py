@@ -1,8 +1,11 @@
 import random
 
+import datetime
 import numpy as np
 import pygame
 import pygame.gfxdraw
+
+from vibrant_frequencies.tools.color_tools import rgb_to_pygame, rgb_rotate
 
 
 class ProtoCircleProvider:
@@ -18,7 +21,7 @@ class ProtoCircleProvider:
         self._screen_height = screen_height
         self._scale = 0.5 / self._screen_width
 
-        self._last_color = random.choice(colors)
+        self._last_color = colors.random()
         self._last_radius = 0
         self._last_width = 0
 
@@ -40,7 +43,7 @@ class ProtoCircleProvider:
         # elif radius < 50 and np.random.uniform() < 0.8:
         #    finalWidth = radius * 0.5 * np.random.uniform()  # small circles not full
         else:
-            self._last_color = random.choice(self._colors)
+            self._last_color = self._colors.random()
 
         self._last_radius = int(radius)
         # some circles being circles instead of disks
@@ -53,6 +56,10 @@ class ProtoCircleProvider:
     @property
     def color(self):
         return self._last_color
+
+    @property
+    def colors(self):
+        return self._colors
 
     @property
     def radius(self):
@@ -77,16 +84,16 @@ class ProtoCircles:
         self._origin = (int(config.video.screen_width / 2),
                         int(config.video.screen_height / 2))
 
-        self._background = (0, 0, 0)
+        self._background = (0.0, 0.0, 0.0)
 
     def activate(self):
-        self._screen.fill(self._background)
+        self._screen.fill(rgb_to_pygame(self._background))
 
     def apply(self, y, dt):
         self._provider.next(y)
 
         pygame.draw.circle(self._screen,
-                           self._provider.color,
+                           rgb_to_pygame(self._provider.color),
                            self._origin,
                            self._provider.radius,
                            self._provider.width)
@@ -98,7 +105,8 @@ class ProtoCircles:
 class AnimatedProtoCircles(ProtoCircles):
     dimensions = 1
 
-    def __init__(self, config, video, colors, linear_waves=False):
+    def __init__(self, config, video, colors, linear_waves=False,
+                 rotate_colors=False):
         super().__init__(config, video, colors)
 
         screen_width = config.video.screen_width
@@ -107,14 +115,18 @@ class AnimatedProtoCircles(ProtoCircles):
 
         self._layers = list()
         self._width = 0
-        self._background = (0, 0, 0)
+        self._background = (0.0, 0.0, 0.0)
         self._velocity = 0.01
         self._last_radius = self._max_radius
 
         self._linear_waves = linear_waves
         self._linear_velocity = 5
 
-    def apply(self, y, dt):
+        self._rotate_colors = rotate_colors
+        self._color_rotate_step = 2 * np.pi / 1000
+        self._color_rotation = 0.0
+
+    def apply(self, y, dt, y2=None):
         self._provider.next(y)
 
         color = self._provider.color
@@ -138,8 +150,16 @@ class AnimatedProtoCircles(ProtoCircles):
 
             self._layers.extend([(radius, color)])
 
-        print(len(self._layers))
-        self._screen.fill(self._background)
+        if self._rotate_colors:
+            self._color_rotation += self._color_rotate_step * (
+                np.random.uniform()) * (0.2 + np.sin(
+                datetime.datetime.now().microsecond / 1000000.0))
+            while self._color_rotation > 2 * np.pi:
+                self._color_rotation -= 2 * np.pi
+            while self._color_rotation < 0:
+                self._color_rotation += 2 * np.pi
+
+        self._screen.fill(rgb_to_pygame(self.__rotated(self._background)))
 
         for r, c in self._layers:
             self.__circle(r, c)
@@ -154,7 +174,7 @@ class AnimatedProtoCircles(ProtoCircles):
 
     def __circle(self, r, c, w=0):
         pygame.draw.circle(self._screen,
-                           c,
+                           rgb_to_pygame(self.__rotated(c)),
                            self._origin,
                            int(r),
                            0)
@@ -164,4 +184,12 @@ class AnimatedProtoCircles(ProtoCircles):
                                      self._origin[0],
                                      self._origin[1],
                                      int(r),
-                                     c)
+                                     rgb_to_pygame(self.__rotated(c)))
+
+    def __rotated(self, c):
+        if not self._rotate_colors:
+            return c
+        return rgb_rotate(c, self._color_rotation)
+
+    def debug(self):
+        print([self.__rotated(c) for c in self._provider.colors.all()])

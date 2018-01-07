@@ -31,7 +31,7 @@ def visualize():
 
     sound = SoundDevice(config)
     video = VideoDevice(config)
-    colors = PrototypeColorProvider().colors
+    colors = PrototypeColorProvider()
     stream = sound.stream
     overflows = 0
     prev_ovf_time = time.time()
@@ -64,13 +64,30 @@ def visualize():
                     symmetry=True,
                     double_symmetry=True,
                     double_rotation=True),
+               Band(colors=colors,
+                    video=video,
+                    config=config,
+                    rotation=True,
+                    symmetry=True,
+                    double_symmetry=True,
+                    double_rotation=True,
+                    rotate_colors=True),
                AnimatedProtoCircles(colors=colors,
                                     video=video,
                                     config=config),
                AnimatedProtoCircles(colors=colors,
                                     video=video,
                                     config=config,
-                                    linear_waves=True)]
+                                    linear_waves=True),
+               AnimatedProtoCircles(colors=colors,
+                                    video=video,
+                                    config=config,
+                                    linear_waves=True,
+                                    rotate_colors=True),
+               AnimatedProtoCircles(colors=colors,
+                                    video=video,
+                                    config=config,
+                                    rotate_colors=True)]
 
     def dim_reduction(y_set):
         ff = np.max(y_set)

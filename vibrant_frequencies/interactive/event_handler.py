@@ -25,6 +25,9 @@ class EventHandler:
                 self._visual_set.prev()
             elif ev.key == pygame.K_RIGHT:
                 self._visual_set.next()
+            elif ev.key == pygame.K_0:
+                if not self._visual_set.empty:
+                    self._visual_set.current_visual.debug()
 
     @property
     def should_quit(self):
