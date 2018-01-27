@@ -16,7 +16,8 @@ requirements = [
     'sounddevice>=0.3.9',
     'pyaudio>=0.2.11',
     'pygame>=1.9.3',
-    'numpy>=1.13.3'
+    'numpy>=1.13.3',
+    'pyglet>=1.3.0'
     # TODO: put package requirements here
 ]
 

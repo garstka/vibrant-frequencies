@@ -16,10 +16,6 @@ class VisualSet:
 
         visual = self._visuals[self._current_visual]
 
-        if self._activate_visual:
-            self._activate_visual = False
-            visual.activate();
-
         if visual.dimensions == 1:
             if self._dim_reduction is None:
                 if not self._warned:
@@ -30,6 +26,18 @@ class VisualSet:
                 visual.apply(y=self._dim_reduction(y_set), dt=dt)
         elif visual.dimensions == 2:
             visual.apply(y_set=y_set, dt=dt)
+
+    def draw(self):
+        if not self._visuals:
+            return
+
+        visual = self._visuals[self._current_visual]
+
+        if self._activate_visual:
+            self._activate_visual = False
+            visual.activate()
+
+        visual.draw()
 
     @property
     def empty(self):

@@ -1,11 +1,7 @@
-import random
-
 import datetime
 import numpy as np
-import pygame
-import pygame.gfxdraw
 
-from vibrant_frequencies.tools.color_tools import rgb_to_pygame, rgb_rotate
+from vibrant_frequencies.tools.color_tools import rgb_rotate
 
 
 class ProtoCircleProvider:
@@ -79,26 +75,25 @@ class ProtoCircles:
                                 screen_width=config.video.screen_width,
                                 screen_height=config.video.screen_height)
 
-        self._screen = video.screen
+        self._video = video
 
-        self._origin = (int(config.video.screen_width / 2),
-                        int(config.video.screen_height / 2))
+        self._origin = (config.video.screen_width / 2,
+                        config.video.screen_height / 2)
 
         self._background = (0.0, 0.0, 0.0)
 
         self._provider.scale(2.0)
 
     def activate(self):
-        self._screen.fill(rgb_to_pygame(self._provider.color))
+        self._video.fill(self._provider.color)
 
     def apply(self, y, dt):
         self._provider.next(y)
 
-        pygame.draw.circle(self._screen,
-                           rgb_to_pygame(self._provider.color),
-                           self._origin,
-                           self._provider.radius,
-                           self._provider.width)
+    def draw(self):
+        self._video.filled_circle(self._origin,
+                                  self._provider.radius,
+                                  self._provider.color)
 
     def scale(self, times: float):
         self._provider.scale(times)
@@ -161,12 +156,13 @@ class AnimatedProtoCircles(ProtoCircles):
             while self._color_rotation < 0:
                 self._color_rotation += 2 * np.pi
 
-        self._screen.fill(rgb_to_pygame(self.__rotated(self._background)))
+        self._last_radius = radius
+
+    def draw(self):
+        self._video.fill(self.__rotated(self._background))
 
         for r, c in self._layers:
-            self.__circle(r, c)
-
-        self._last_radius = radius
+            self.__circle(r, self.__rotated(c))
 
     def __scale_up(self, radius, dt):
         if self._linear_waves:
@@ -174,19 +170,10 @@ class AnimatedProtoCircles(ProtoCircles):
         else:
             return radius * (1.0 + self._velocity * dt)
 
-    def __circle(self, r, c, w=0):
-        pygame.draw.circle(self._screen,
-                           rgb_to_pygame(self.__rotated(c)),
-                           self._origin,
-                           int(r),
-                           0)
-
-    def __gfxcircle(self, r, c, w=0):
-        pygame.gfxdraw.filled_circle(self._screen,
-                                     self._origin[0],
-                                     self._origin[1],
-                                     int(r),
-                                     rgb_to_pygame(self.__rotated(c)))
+    def __circle(self, r, c):
+        self._video.filled_circle(origin=self._origin,
+                                  radius=r,
+                                  color=c)
 
     def __rotated(self, c):
         if not self._rotate_colors:

@@ -4,14 +4,14 @@
 import logging
 
 import click
-from .prototype import visualize
+from .prototype import Prototype
 
 
 @click.command()
 def main(args=None):
     logging.getLogger('').setLevel(logging.WARN)
     """Console script for vibrant_frequencies."""
-    visualize()
+    Prototype()
 
 
 if __name__ == "__main__":

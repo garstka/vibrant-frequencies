@@ -5,6 +5,7 @@ import datetime
 import numpy as np
 import pyaudio
 import pygame
+import pyglet
 import sounddevice as sd
 
 from .visuals.band import Band
@@ -26,105 +27,123 @@ from .colors.prototype_provider import PrototypeColorProvider
 # pip3 install pyaudio
 # pip3 install pygame
 
-def visualize():
-    config = InteractiveConfigProvider().config
+class Prototype:
+    def __init__(self):
+        self.config = InteractiveConfigProvider().config
 
-    sound = SoundDevice(config)
-    video = VideoDevice(config)
-    colors = PrototypeColorProvider()
-    stream = sound.stream
-    overflows = 0
-    prev_ovf_time = time.time()
+        self.sound = SoundDevice(self.config)
+        self.video = VideoDevice(self.config)
+        self.window = self.video.window
+        self.colors = PrototypeColorProvider()
+        self.stream = self.sound.stream
+        self.overflows = 0
+        self.prev_ovf_time = time.time()
 
-    visuals = [ProtoCircles(colors=colors,
-                            video=video,
-                            config=config),
-               Band(colors=colors,
-                    video=video,
-                    config=config),
-               Band(colors=colors,
-                    video=video,
-                    config=config,
-                    rotation=True),
-               Band(colors=colors,
-                    video=video,
-                    config=config,
-                    rotation=True,
-                    symmetry=True),
-               Band(colors=colors,
-                    video=video,
-                    config=config,
-                    rotation=True,
-                    symmetry=True,
-                    double_symmetry=True),
-               Band(colors=colors,
-                    video=video,
-                    config=config,
-                    rotation=True,
-                    symmetry=True,
-                    double_symmetry=True,
-                    double_rotation=True),
-               Band(colors=colors,
-                    video=video,
-                    config=config,
-                    rotation=True,
-                    symmetry=True,
-                    double_symmetry=True,
-                    double_rotation=True,
-                    rotate_colors=True),
-               AnimatedProtoCircles(colors=colors,
-                                    video=video,
-                                    config=config),
-               AnimatedProtoCircles(colors=colors,
-                                    video=video,
-                                    config=config,
-                                    linear_waves=True),
-               AnimatedProtoCircles(colors=colors,
-                                    video=video,
-                                    config=config,
-                                    linear_waves=True,
-                                    rotate_colors=True),
-               AnimatedProtoCircles(colors=colors,
-                                    video=video,
-                                    config=config,
-                                    rotate_colors=True)]
+        self.visuals = [ProtoCircles(colors=self.colors,
+                                     video=self.video,
+                                     config=self.config),
+                        Band(colors=self.colors,
+                             video=self.video,
+                             config=self.config),
+                        Band(colors=self.colors,
+                             video=self.video,
+                             config=self.config,
+                             rotation=True),
+                        Band(colors=self.colors,
+                             video=self.video,
+                             config=self.config,
+                             rotation=True,
+                             symmetry=True),
+                        Band(colors=self.colors,
+                             video=self.video,
+                             config=self.config,
+                             rotation=True,
+                             symmetry=True,
+                             double_symmetry=True),
+                        Band(colors=self.colors,
+                             video=self.video,
+                             config=self.config,
+                             rotation=True,
+                             symmetry=True,
+                             double_symmetry=True,
+                             double_rotation=True),
+                        Band(colors=self.colors,
+                             video=self.video,
+                             config=self.config,
+                             rotation=True,
+                             symmetry=True,
+                             double_symmetry=True,
+                             double_rotation=True,
+                             rotate_colors=True),
+                        AnimatedProtoCircles(colors=self.colors,
+                                             video=self.video,
+                                             config=self.config),
+                        AnimatedProtoCircles(colors=self.colors,
+                                             video=self.video,
+                                             config=self.config,
+                                             linear_waves=True),
+                        AnimatedProtoCircles(colors=self.colors,
+                                             video=self.video,
+                                             config=self.config,
+                                             linear_waves=True,
+                                             rotate_colors=True),
+                        AnimatedProtoCircles(colors=self.colors,
+                                             video=self.video,
+                                             config=self.config,
+                                             rotate_colors=True)]
 
-    def dim_reduction(y_set):
-        ff = np.max(y_set)
-        return ff
+        def dim_reduction(y_set):
+            ff = np.max(y_set)
+            return ff
 
-    visual_set = VisualSet(visuals=visuals,
-                           dim_reduction=dim_reduction)
+        self.visual_set = VisualSet(visuals=self.visuals,
+                                    dim_reduction=dim_reduction)
 
-    events = EventHandler(visual_set=visual_set)
+        self.events = EventHandler(visual_set=self.visual_set,
+                                   window=self.video.window)
 
-    time_scale = 50.0
-    t0 = datetime.datetime.now()
-    while not events.should_quit:
+        self.time_scale = 50.0
+        self.t0 = datetime.datetime.now()
+
+        self.fps_display = pyglet.clock.ClockDisplay()
+
+        prototype = self
+
+        @self.video.window.event
+        def on_draw():
+            prototype.draw()
+
+        def update(dt):
+            prototype.update(dt)
+
+        pyglet.clock.schedule_interval(update, 1 / self.config.video.fps)
+
+        pyglet.app.run()
+
+        self.stream.stop_stream()
+        self.stream.close()
+        self.sound.pyaudio.terminate()
+
+    def update(self, dt):
         try:
-            t1 = datetime.datetime.now()
             y = np.fromstring(
-                stream.read(sound.frames_per_buffer,
-                            exception_on_overflow=False),
+                self.stream.read(self.sound.frames_per_buffer,
+                                 exception_on_overflow=False),
                 dtype=np.int16)
             y = y.astype(np.float32)
-            # print(y)
             f = np.abs(np.fft.rfft(y))
 
-            visual_set.apply(f,
-                             dt=(t1 - t0).microseconds / 1000000.0 * time_scale)
+            self.visual_set.apply(f,
+                                  dt=dt * self.time_scale)
 
-            pygame.display.flip()
-
-            events.poll()
-
-            t0 = t1
         except IOError:
-            overflows += 1
-            if time.time() > prev_ovf_time + 1:
-                prev_ovf_time = time.time()
-                print('Audio buffer has overflowed {} times'.format(overflows))
+            self.overflows += 1
+            if time.time() > self.prev_ovf_time + 1:
+                self.prev_ovf_time = time.time()
+                print('Audio buffer has overflowed {} times'.format(
+                    self.overflows))
 
-    stream.stop_stream()
-    stream.close()
-    sound.pyaudio.terminate()
+    def draw(self):
+        self.visual_set.draw()
+        if self.config.video.display_fps:
+            self.fps_display.draw()

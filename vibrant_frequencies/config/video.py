@@ -4,13 +4,15 @@ class VideoConfig:
     __key_height = 'screenHeight'
     __key_fullscreen = 'fullscreen'
     __key_vsync = 'vSync'
+    __key_display_fps = 'displayFps'
 
     def __init__(self):
         self.__config = {self.__key_fps: 60,
                          self.__key_width: 1920,
                          self.__key_height: 1080,
                          self.__key_fullscreen: True,
-                         self.__key_vsync: True}
+                         self.__key_vsync: True,
+                         self.__key_display_fps: False}
 
     @property
     def fps(self) -> int:
@@ -51,6 +53,14 @@ class VideoConfig:
     @vsync.setter
     def vsync(self, value: bool):
         self.__config[self.__key_vsync] = value
+
+    @property
+    def display_fps(self) -> bool:
+        return self.__config[self.__key_display_fps]
+
+    @display_fps.setter
+    def display_fps(self, value: bool):
+        self.__config[self.__key_display_fps] = value
 
     def as_dict(self) -> dict:
         return self.__config
