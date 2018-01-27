@@ -90,7 +90,7 @@ def visualize():
                                     rotate_colors=True)]
 
     def dim_reduction(y_set):
-        ff = np.max(y_set)
+        ff = np.percentile(y_set, 99.0)
         return ff
 
     visual_set = VisualSet(visuals=visuals,
