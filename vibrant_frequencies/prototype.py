@@ -7,6 +7,7 @@ import pyaudio
 import pygame
 import sounddevice as sd
 
+from vibrant_frequencies.visuals.combo import Combo
 from .visuals.band import Band
 from .interactive.event_handler import EventHandler
 from .visuals.visual_set import VisualSet
@@ -35,6 +36,10 @@ def visualize():
     stream = sound.stream
     overflows = 0
     prev_ovf_time = time.time()
+
+    def dim_reduction(y_set):
+        ff = np.percentile(y_set, 99.0)
+        return ff
 
     visuals = [ProtoCircles(colors=colors,
                             video=video,
@@ -87,11 +92,11 @@ def visualize():
                AnimatedProtoCircles(colors=colors,
                                     video=video,
                                     config=config,
-                                    rotate_colors=True)]
-
-    def dim_reduction(y_set):
-        ff = np.percentile(y_set, 99.0)
-        return ff
+                                    rotate_colors=True),
+               Combo(colors=colors,
+                     video=video,
+                     config=config,
+                     dim_reduction=dim_reduction)]
 
     visual_set = VisualSet(visuals=visuals,
                            dim_reduction=dim_reduction)

@@ -17,9 +17,13 @@ class Band:
                  rotation=False,
                  double_symmetry=False,
                  double_rotation=False,
-                 rotate_colors=False):
+                 rotate_colors=False,
+                 no_clear_at_begin=False,
+                 no_random_colors=False):
         self._screen = video.screen
         self._colors = colors
+        self._no_clear_at_begin = no_clear_at_begin
+        self._no_random_colors = no_random_colors
 
         self._screen_width = config.video.screen_width
         self._screen_height = config.video.screen_height
@@ -50,9 +54,13 @@ class Band:
         pass
 
     def apply(self, y_set, dt):
-        self._screen.fill(self._background)
+        if not self._no_clear_at_begin:
+            self._screen.fill(self._background)
 
-        self._color = self._colors.random()
+        if not self._no_random_colors:
+            self._color = self._colors.random()
+        else:
+            self._color = (1.0, 1.0, 1.0)
 
         spectrum_length = len(y_set)
         step = 2 * pi / spectrum_length
