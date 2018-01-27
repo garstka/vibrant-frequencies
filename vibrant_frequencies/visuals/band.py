@@ -24,7 +24,7 @@ class Band:
         self._screen_width = config.video.screen_width
         self._screen_height = config.video.screen_height
 
-        self._scale = 0.5 / self._screen_width
+        self._scale = 2.0 / self._screen_width
         self._origin = (int(self._screen_width / 2),
                         int(self._screen_height / 2))
 

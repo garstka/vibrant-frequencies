@@ -19,7 +19,7 @@ class ProtoCircleProvider:
 
         self._screen_width = screen_width
         self._screen_height = screen_height
-        self._scale = 0.5 / self._screen_width
+        self._scale = 1.0 / self._screen_width
 
         self._last_color = colors.random()
         self._last_radius = 0
@@ -86,8 +86,10 @@ class ProtoCircles:
 
         self._background = (0.0, 0.0, 0.0)
 
+        self._provider.scale(2.0)
+
     def activate(self):
-        self._screen.fill(rgb_to_pygame(self._background))
+        self._screen.fill(rgb_to_pygame(self._provider.color))
 
     def apply(self, y, dt):
         self._provider.next(y)
@@ -115,12 +117,12 @@ class AnimatedProtoCircles(ProtoCircles):
 
         self._layers = list()
         self._width = 0
-        self._background = (0.0, 0.0, 0.0)
+        self._background = self._provider.color
         self._velocity = 0.01
         self._last_radius = self._max_radius
 
         self._linear_waves = linear_waves
-        self._linear_velocity = 5
+        self._linear_velocity = int(screen_width / 200)
 
         self._rotate_colors = rotate_colors
         self._color_rotate_step = 2 * np.pi / 1000
