@@ -23,6 +23,9 @@ class VideoDevice:
         self.__screen = pygame.display.set_mode(dimensions, flags)
         pygame.init()
 
+        pygame.mouse.set_cursor((8, 8), (0, 0), (0, 0, 0, 0, 0, 0, 0, 0),
+                                (0, 0, 0, 0, 0, 0, 0, 0))
+
     @property
     def screen(self):
         return self.__screen
