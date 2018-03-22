@@ -43,10 +43,11 @@ setup(
               'vibrant_frequencies.config',
               'vibrant_frequencies.device',
               'vibrant_frequencies.interactive',
+              'vibrant_frequencies.tools',
               'vibrant_frequencies.visuals'],
     entry_points={
         'console_scripts': [
-            'vf=vibrant_frequencies.cli:main'
+            'vibrant-frequencies=vibrant_frequencies.cli:main'
         ]
     },
     include_package_data=True,
