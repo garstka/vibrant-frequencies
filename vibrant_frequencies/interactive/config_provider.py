@@ -29,7 +29,7 @@ class InteractiveConfigProvider:
 
             if info['max_input_channels'] == 0:
                 print("This doesn't seem to be an input device.")
-                continue
+                # continue
 
             self.__config.sound.channels = 1  # info['max_input_channels']
 

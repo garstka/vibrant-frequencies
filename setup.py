@@ -5,70 +5,45 @@
 
 from setuptools import setup, find_packages
 
-with open('README.rst') as readme_file:
-    readme = readme_file.read()
+with open('README.md') as readme_file:
+    README = readme_file.read()
 
-with open('HISTORY.rst') as history_file:
-    history = history_file.read()
-
-requirements = [
-    'Click>=6.0',
-    'sounddevice>=0.3.9',
-    'pyaudio>=0.2.11',
-    'pygame>=1.9.3',
-    'numpy>=1.13.3'
-    # TODO: put package requirements here
-]
-
-setup_requirements = [
-    'pytest-runner',
-    # TODO(garstka): put setup requirements (distutils extensions, etc.) here
-]
-
-test_requirements = [
-    'pytest',
-    # TODO: put package test requirements here
-]
+with open('requirements.txt') as requirements_file:
+    REQUIREMENTS = [i for i in requirements_file.readlines() if i]
 
 setup(
-    name='vibrant_frequencies',
-    version='0.1.0',
-    description="Real-time sound visualization in Python.",
-    long_description=readme + '\n\n' + history,
     author="Matt Garstka",
-    author_email='matt.garstka@gmail.com',
-    url='https://github.com/garstka/vibrant_frequencies',
-    packages=['vibrant_frequencies',
-              'vibrant_frequencies.colors',
-              'vibrant_frequencies.config',
-              'vibrant_frequencies.device',
-              'vibrant_frequencies.interactive',
-              'vibrant_frequencies.tools',
-              'vibrant_frequencies.visuals'],
+    author_email="matt@garstka.net",
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+        'Intended Audience :: End Users/Desktop',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Operating System :: POSIX :: Linux',
+        'Operating System :: Microsoft :: Windows',
+        'Topic :: Multimedia :: Graphics',
+        'Topic :: Multimedia :: Sound/Audio',
+        'Natural Language :: English',
+    ],
+    description="Real-time sound visualization in Python.",
     entry_points={
         'console_scripts': [
             'vibrant-frequencies=vibrant_frequencies.cli:main'
         ]
     },
+    install_requires=REQUIREMENTS,
+    long_description=README,
+    long_description_content_type='text/markdown',
     include_package_data=True,
-    install_requires=requirements,
+    keywords="real-time sound visualization music",
     license="MIT license",
+    name='vibrant_frequencies',
+    packages=find_packages(include=['vibrant_frequencies']),
+    url='https://github.com/garstka/vibrant_frequencies',
+    version='0.1',
     zip_safe=False,
-    keywords='vibrant_frequencies',
-    classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-    ],
-    test_suite='tests',
-    tests_require=test_requirements,
-    setup_requires=setup_requirements,
+    test_suite='tests'
 )
