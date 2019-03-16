@@ -1,12 +1,10 @@
-import random
 from math import cos, sin, pi
 
-import datetime
 import numpy as np
 import pygame
 
 from vibrant_frequencies.tools.color_tools import rgb_to_pygame, rgb_rotate
-from ..device.video import VideoDevice
+from vibrant_frequencies.device.video import VideoDevice
 
 
 class Band:

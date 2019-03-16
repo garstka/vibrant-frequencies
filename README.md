@@ -18,12 +18,14 @@ Watch at 1080p60 for best effect.
 
 ## Install
 
-    pip3 install git+https://github.com/garstka/vibrant-frequencies
+    pip install git+https://github.com/garstka/vibrant-frequencies
 
 If this doesn't work on Linux, you may need to install additional
  dependencies. Here is more or less what I needed on Raspberry Pi:
 
     apt-get install libsdl-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libportmidi-dev libsdl-ttf2.0-dev portaudio19-dev libffi-dev
+
+To use loopback on Windows, install this pyaudio fork: [pyaudio_portaudio by intxcc](https://github.com/intxcc/pyaudio_portaudio).
 
 ## First run
 

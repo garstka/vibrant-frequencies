@@ -1,8 +1,9 @@
 import colorsys
 from math import pi
+from typing import Tuple
 
 
-def rgb_to_pygame(color):
+def rgb_to_pygame(color: Tuple[float, float, float]):
     r, g, b = color
     return int(255 * r), int(255 * g), int(255 * b)
 

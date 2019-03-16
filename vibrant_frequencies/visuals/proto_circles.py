@@ -1,5 +1,3 @@
-import random
-
 import datetime
 import numpy as np
 import pygame

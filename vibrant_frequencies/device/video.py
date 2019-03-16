@@ -1,7 +1,8 @@
 import logging
 
-from ..config.all import Config
 import pygame
+
+from vibrant_frequencies.config.config import Config
 
 
 class VideoDevice:

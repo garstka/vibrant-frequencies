@@ -18,7 +18,7 @@ class VisualSet:
 
         if self._activate_visual:
             self._activate_visual = False
-            visual.activate();
+            visual.activate()
 
         if visual.dimensions == 1:
             if self._dim_reduction is None:

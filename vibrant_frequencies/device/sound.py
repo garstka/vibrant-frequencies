@@ -1,8 +1,9 @@
 import math
 import sounddevice
 
-from ..config.all import Config
 import pyaudio
+
+from vibrant_frequencies.config.config import Config
 
 
 class SoundDevice:
@@ -33,14 +34,23 @@ class SoundDevice:
         print(ratio)
         self.__frames_per_buffer = 2 ** int(math.log(rate / fps, 2))
         # self.__frames_per_buffer = int(rate / fps)
-        # as_loopback=True
-        self.__stream = \
-            self.__pyaudio.open(format=pyaudio.paInt16,
-                                channels=channels,
-                                rate=rate,
-                                input=True,
-                                frames_per_buffer=self.__frames_per_buffer,
-                                input_device_index=device_id)
+        if config.sound.windows_loopback:
+            self.__stream = \
+                self.__pyaudio.open(format=pyaudio.paInt16,
+                                    channels=channels,
+                                    rate=rate,
+                                    input=True,
+                                    frames_per_buffer=self.__frames_per_buffer,
+                                    input_device_index=device_id,
+                                    as_loopback=True)
+        else:
+            self.__stream = \
+                self.__pyaudio.open(format=pyaudio.paInt16,
+                                    channels=channels,
+                                    rate=rate,
+                                    input=True,
+                                    frames_per_buffer=self.__frames_per_buffer,
+                                    input_device_index=device_id)
 
     @property
     def pyaudio(self):

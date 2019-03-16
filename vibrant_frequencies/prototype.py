@@ -1,11 +1,8 @@
-import random
 import time
 
 import datetime
 import numpy as np
-import pyaudio
 import pygame
-import sounddevice as sd
 
 from vibrant_frequencies.visuals.combo import Combo
 from .visuals.band import Band
@@ -18,14 +15,6 @@ from .interactive.config_provider import \
     InteractiveConfigProvider
 from .colors.prototype_provider import PrototypeColorProvider
 
-
-# prototype based on:
-# https://github.com/scottlawsonbc/audio-reactive-led-strip
-# https://www.makeartwithpython.com/blog/video-synthesizer-in-python/
-#
-# apt-get install portaudio19-dev
-# pip3 install pyaudio
-# pip3 install pygame
 
 def visualize():
     config = InteractiveConfigProvider().config

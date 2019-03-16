@@ -8,9 +8,8 @@ from .prototype import visualize
 
 
 @click.command()
-def main(args=None):
+def main():
     logging.getLogger('').setLevel(logging.WARN)
-    """Console script for vibrant_frequencies."""
     visualize()
 
 
