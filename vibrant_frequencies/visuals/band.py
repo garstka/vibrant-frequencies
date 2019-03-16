@@ -60,24 +60,25 @@ class Band:
         else:
             self._color = (1.0, 1.0, 1.0)
 
+        speed = 50.0
         spectrum_length = len(y_set)
         step = 2 * pi / spectrum_length
 
         if self._use_rotation:
             self._rotation += self._rotate_step * (0.5 - np.random.uniform()) \
-                              * dt
+                              * dt * speed
             if self._rotation > 2 * pi:
                 self._rotation = 0.0
 
             if self._double_symmetry and self._use_double_rotation:
                 self._double_rotation += \
-                    self._rotate_step * (0.5 - np.random.uniform()) * dt
+                    self._rotate_step * (0.5 - np.random.uniform()) * dt * speed
                 if self._double_rotation > 2 * pi:
                     self._double_rotation = 0.0
 
         if self._rotate_colors:
-            self._color_rotation += self._color_rotate_step * dt * (0.8 -
-                                                                    np.random.uniform())
+            self._color_rotation += self._color_rotate_step * dt * speed * (
+                0.8 - np.random.uniform())
             while self._color_rotation > 2 * np.pi:
                 self._color_rotation -= 2 * np.pi
             while self._color_rotation < 0:

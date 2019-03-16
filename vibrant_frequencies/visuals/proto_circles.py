@@ -167,10 +167,11 @@ class AnimatedProtoCircles(ProtoCircles):
         self._last_radius = radius
 
     def __scale_up(self, radius, dt):
+        speed = 50.0
         if self._linear_waves:
-            return radius + self._linear_velocity * dt
+            return radius + self._linear_velocity * dt * speed
         else:
-            return radius * (1.0 + self._velocity * dt)
+            return radius * (1.0 + self._velocity * dt * speed)
 
     def __circle(self, r, c, w=0):
         pygame.draw.circle(self._screen,

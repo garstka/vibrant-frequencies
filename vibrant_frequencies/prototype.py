@@ -1,9 +1,12 @@
 import time
 
 import datetime
+from contextlib import ExitStack
+
 import numpy as np
 import pygame
 
+from vibrant_frequencies.helper.on_exit import on_exit
 from vibrant_frequencies.visuals.combo import Combo
 from .visuals.band import Band
 from .interactive.event_handler import EventHandler
@@ -96,33 +99,36 @@ def visualize():
 
     events = EventHandler(visual_set=visual_set)
 
-    time_scale = 50.0
+    time_scale = 1.0
     t0 = datetime.datetime.now()
-    while not events.should_quit:
-        try:
-            t1 = datetime.datetime.now()
-            y = np.fromstring(
-                stream.read(sound.frames_per_buffer,
-                            exception_on_overflow=False),
-                dtype=np.int16)
-            y = y.astype(np.float32)
-            # print(y)
-            f = np.abs(np.fft.rfft(y))
+    with ExitStack() as stack:
+        stack.enter_context(on_exit(lambda: sound.pyaudio.terminate()))
+        stack.enter_context(on_exit(lambda: stream.close()))
+        stack.enter_context(on_exit(lambda: stream.stop_stream()))
 
-            visual_set.apply(f,
-                             dt=(t1 - t0).microseconds / 1000000.0 * time_scale)
+        while not events.should_quit:
+            try:
+                t1 = datetime.datetime.now()
+                y = np.fromstring(
+                    stream.read(sound.frames_per_buffer,
+                                exception_on_overflow=False),
+                    dtype=np.int16)
+                y = y.astype(np.float32)
+                # print(y)
+                f = np.abs(np.fft.rfft(y))
 
-            pygame.display.flip()
+                visual_set.apply(f,
+                                 dt=(
+                                        t1 - t0).microseconds / 1000000.0 * time_scale)
 
-            events.poll()
+                pygame.display.flip()
 
-            t0 = t1
-        except IOError:
-            overflows += 1
-            if time.time() > prev_ovf_time + 1:
-                prev_ovf_time = time.time()
-                print('Audio buffer has overflowed {} times'.format(overflows))
+                events.poll()
 
-    stream.stop_stream()
-    stream.close()
-    sound.pyaudio.terminate()
+                t0 = t1
+            except IOError:
+                overflows += 1
+                if time.time() > prev_ovf_time + 1:
+                    prev_ovf_time = time.time()
+                    print('Audio buffer has overflowed {} times'.format(
+                        overflows))
